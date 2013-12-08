@@ -5,5 +5,7 @@
 .settings
 .metadata
 
+/bin
 */bin
+/build
 */build
