@@ -6,7 +6,35 @@
 </head>
 <body>
 
-	Hello World!
+    <form wicket:id="inputForm" class="inputForm">
+    
+
+     <p></p>
+      <fieldset>
+        <legend>RGB</legend>
+        <table id="inputFormTable">
+          <tr>
+          <td valign="top">
+              <label>R</label>
+              <input wicket:id="valueR" id="stringProperty" type="text" size="10"/>
+          </td>
+          <td valign="top">
+              <label>G</label>
+              <input wicket:id="valueG" id="stringProperty" type="text" size="10"/>
+          </td>
+          <td valign="top">
+              <label>B</label>
+              <input wicket:id="valueB" id="stringProperty" type="text" size="10"/>   
+          </td>
+          
+          <td valign="top">
+          	<input type="submit" wicket:id="applyButton" value="Apply" />
+          </td>
+          
+		  </tr>              
+         </table>
+      </fieldset>
+    </form>
 	
 </body>
 
