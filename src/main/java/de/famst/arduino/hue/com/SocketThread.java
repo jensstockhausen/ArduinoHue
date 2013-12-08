@@ -25,10 +25,12 @@ public class SocketThread implements Runnable
 
   private Boolean keepRunning;
   
-  private final BlockingQueue queue;
+  private final BlockingQueue<String> queue;
 
-  public SocketThread(BlockingQueue queue)
+  public SocketThread(BlockingQueue<String> queue)
   {
+    LOG.info("Init SocketThread for Arduino");
+    
     port = 8888;
     this.queue = queue;
     
@@ -39,15 +41,27 @@ public class SocketThread implements Runnable
       LOG.info("Server opened at " + server.getInetAddress() + ":"
           + server.getLocalPort());
 
+      keepRunning = true;
+      
+      try
+      {
+        queue.put("#SET|000000000\n");
+        queue.put("#SET|255000000\n");
+        queue.put("#SET|000255000\n");
+        queue.put("#SET|000000255\n");
+        queue.put("#SET|000000000\n");     
+      }
+      catch (InterruptedException e)
+      {
+        e.printStackTrace();
+      }
+      
+      thread = new Thread(this, "SocketThread");
+      thread.start();
     } catch (IOException e)
     {
       e.printStackTrace();
     }
-
-    keepRunning = true;
-
-    thread = new Thread(this, "SocketThread");
-    thread.start();
   }
 
   @Override
@@ -72,13 +86,14 @@ public class SocketThread implements Runnable
           
           if (inFromClient.ready())
           {
+            LOG.info("Start reading from client");
             String clientSentence = inFromClient.readLine();
             LOG.info("Received: " + clientSentence);
           }
           
           if (queue.size() > 0)
           {
-            String message = (String) queue.take();
+            String message = queue.take();
             outToClient.writeBytes(message);
             LOG.info("Written Message:" + message);
           }

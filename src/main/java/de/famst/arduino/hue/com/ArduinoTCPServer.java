@@ -1,43 +1,28 @@
 package de.famst.arduino.hue.com;
 
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import javax.annotation.ManagedBean;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
-import com.esotericsoftware.minlog.Log;
+import de.famst.arduino.hue.RGBColor;
 
-@ManagedBean
+@Service
 public class ArduinoTCPServer
 {
   private static final Logger LOG = LoggerFactory
       .getLogger(ArduinoTCPServer.class);
 
-  private BlockingQueue<String> queue;
-  private SocketThread thread = null;
+  private static BlockingQueue<String> queue = new ArrayBlockingQueue<String>(100);
+  private static SocketThread thread = new SocketThread(queue);
 
   public ArduinoTCPServer()
   {
-    queue = new ArrayBlockingQueue<String>(100);
-    thread = new SocketThread(queue);
-
-    try
-    {
-      // blick when connected
-      queue.put("#SET|000000000\n");
-      queue.put("#SET|255000000\n");
-      queue.put("#SET|000255000\n");
-      queue.put("#SET|000000255\n");
-      queue.put("#SET|000000000\n");
-    }
-    catch (InterruptedException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    LOG.info("Init ArduinoTCPServer");
   }
 
   public void sendMessage(String message)
@@ -53,12 +38,17 @@ public class ArduinoTCPServer
     }
   }
 
-  public void setColor(Integer valueR, Integer valueG, Integer valueB)
+  public void setColor(RGBColor color)
   {
-    String message = String.format("#SET|%03d%03d%03d\n", valueR, valueG,
-        valueB);
+    String message = String.format("#SET|%03d%03d%03d\n", color.getR(),
+        color.getG(), color.getB());
 
     sendMessage(message);
+  }
+
+  public void setColors(List<RGBColor> colors)
+  {
+
   }
 
 }

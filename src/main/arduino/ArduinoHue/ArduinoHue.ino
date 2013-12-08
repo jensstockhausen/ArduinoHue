@@ -3,14 +3,14 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
-
 #define DATA_1 (PORTC |=  0X01)    // DATA 1    // for UNO
 #define DATA_0 (PORTC &=  0XFE)    // DATA 0    // for UNO
 #define STRIP_PINOUT (DDRC=0xFF)    // for UNO
 
 float hues[10];
 
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte mac[] = { 
+  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 IPAddress ip(192,168,42,2);
 
 char server[] = "192.168.42.1";
@@ -30,36 +30,68 @@ String  valueBuffer;
 
 void setup() 
 {
-  
+
   STRIP_PINOUT;   
-     
+
   for (int i=0;i<10;i++)
   {
     hues[i] = i * 90.0 / 10.0;
   }
-  
-  
+
   readingMode  = false;
   readingValue = false;
-  
+
   modeBuffer  = "";
   valueBuffer = "";
-  
+
   Serial.begin(9600);
   Serial.println("starting");
 
   Ethernet.begin(mac, ip);
- 
+
   Serial.println("wait for init");
-  
-  for (byte i=0;i<5;i++)
+
+
+  noInterrupts();
+  reset_strip();  
+  for(int i=0;i<10;i++)
   {
-    Serial.println("waiting...");
-    delay(1000);
+    send_strip((0*65536)+(0*256)+255);
   }
-  
+  interrupts(); 
+  delay(1000);
+ 
+   noInterrupts();
+  reset_strip();  
+  for(int i=0;i<10;i++)
+  {
+    send_strip((0*65536)+(255*256)+0);
+  }
+  interrupts(); 
+  delay(1000);
+ 
+   noInterrupts();
+  reset_strip();  
+  for(int i=0;i<10;i++)
+  {
+    send_strip((255*65536)+(0*256)+0);
+  }
+  interrupts(); 
+  delay(1000);
+
+
+  noInterrupts();
+  reset_strip();  
+  for(int i=0;i<10;i++)
+  {
+    send_strip(0);
+  }
+  interrupts(); 
+  delay(1000);
+
+
   Serial.println("runnig");
-  
+
   lastConnectionTime = 0;
 }
 
@@ -69,7 +101,7 @@ void loop()
   if ((!client.connected()) && (millis() - lastConnectionTime > postingInterval))
   {
     Serial.println("try to connect...");
-    
+
     if (client.connect(server, port)) 
     {
       Serial.println("   connected");
@@ -79,7 +111,7 @@ void loop()
     {
       Serial.println("   connection failed");
     }
-    
+
     lastConnectionTime = millis();
   }
 
@@ -87,9 +119,9 @@ void loop()
   if (client.available()) 
   {
     //Serial.println(client.available());
-    
+
     char c = client.read();
-    
+
     if (c == '#')
     {
       readingMode  = true;
@@ -104,11 +136,9 @@ void loop()
     {
       readingMode  = false;
       readingValue = false;
-      
+
       execute();
-      
-      client.println("ACK");
-      
+
       modeBuffer  = "";
       valueBuffer = "";
     }
@@ -134,7 +164,7 @@ void execute()
   Serial.println("Execute: " + modeBuffer + " " + valueBuffer);
   byte r,g,b;
   unsigned long colors[10];
-  
+
   if (modeBuffer.equals("SET"))
   {
     if (valueBuffer.length() == 9)
@@ -144,19 +174,43 @@ void execute()
       b = valueBuffer.substring(6, 9).toInt();
 
       Serial.print("Setting RGB:");
-      Serial.print(r); Serial.print(" ");
-      Serial.print(g); Serial.print(" ");
-      Serial.print(b); Serial.print(" ");
+      Serial.print(r); 
+      Serial.print(" ");
+      Serial.print(g); 
+      Serial.print(" ");
+      Serial.print(b); 
+      Serial.print(" ");
       Serial.print("\n");
-      
+
       for (byte i=0;i<10;i++)
       {
         colors[i] = (g*65536)+(b*256)+r;
       }
     }
-    
+
+    else if (valueBuffer.length() == 9*10)
+    {
+      for (byte i=0;i<10;i++)
+      {
+        r = valueBuffer.substring(i*9+0, i*9+3).toInt();
+        g = valueBuffer.substring(i*9+3, i*9+6).toInt();
+        b = valueBuffer.substring(i*9+6, i*9+9).toInt();
+
+        Serial.print("Setting RGB:");
+        Serial.print(r); 
+        Serial.print(" ");
+        Serial.print(g); 
+        Serial.print(" ");
+        Serial.print(b); 
+        Serial.print(" ");
+        Serial.print("\n");
+
+        colors[i] = (g*65536)+(b*256)+r;
+      }
+    }
+
   }
-    
+
   noInterrupts();
   reset_strip();  
   for(int i=0;i<10;i++)
@@ -222,6 +276,7 @@ void reset_strip()
   DATA_0;
   delayMicroseconds(20);
 }
+
 
 
 

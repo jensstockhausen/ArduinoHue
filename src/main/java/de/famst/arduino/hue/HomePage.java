@@ -15,7 +15,6 @@ public class HomePage extends WebPage
   @SpringBean
   private ArduinoTCPServer arduinoTCPServer;
   
-  
   private static final long serialVersionUID = 1L;
 
   private class RGBInputForm extends Form
@@ -76,24 +75,13 @@ public class HomePage extends WebPage
           .add(new RangeValidator<Integer>(0, 255)));
 
       add(new Button("applyButton"));
-      
-//      {
-//        private static final long serialVersionUID = 1L;
-//
-//        @Override
-//        public void onSubmit()
-//        {
-//          @SuppressWarnings("unused")
-//          Integer red = getValueR();
-//        }
-//      }.setDefaultFormProcessing(false));
 
     }
 
     @Override
     protected void onSubmit()
     { 
-      arduinoTCPServer.setColor(getValueR(), getValueG(), getValueB());
+      arduinoTCPServer.setColor(new RGBColor(getValueR(), getValueG(), getValueB()));
     }
 
   }
