@@ -7,10 +7,13 @@ The web application does the complicated logic and sends commands to the Arduino
 
 
 Parts:
+
 http://www.radioshack.com/product/index.jsp?productId=22128606
 
 
 Part of the ideas came from:
+
+http://blog.radioshack.com/2013/06/tricolor-led-strip/
 http://www.lauridmeyer.com/2012/04/simple-arduino-tcp-client-using-the-ethernetshield-dhcp-and-a-java-server/
 http://vellamy.blogspot.de/p/sockettcpiparduino.html
 
