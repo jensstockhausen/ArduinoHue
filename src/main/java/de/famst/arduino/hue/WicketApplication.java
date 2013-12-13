@@ -7,8 +7,6 @@ import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.famst.arduino.hue.com.ArduinoTCPServer;
-
 public class WicketApplication extends WebApplication
 {
   private static final Logger LOG = LoggerFactory.getLogger(WicketApplication.class);

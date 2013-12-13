@@ -1,0 +1,25 @@
+body,p,li,a {
+	font-family: arial, serif;
+	font-size: 12pt;
+	background-color: #909090;
+}
+
+h1,h2,h3 {
+	font-family: arial, serif;
+}
+
+body {
+	margin: 0;
+	padding: 5px;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+td.color {
+	margin: 2px;
+	font-size: 8pt;
+	background-color: #99999;
+	align: horizontal;
+	/* width: 30px; */
+	height: 10px;
+}

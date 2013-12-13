@@ -1,41 +1,67 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<title>Arduino Hue</title>
 </head>
 <body>
+	<table id="colorTable">
+		<tr>
+			<td wicket:id="color00" id="color_00" class="color"></td>
+			<!-- 
+			<td wicket:id="color_01" id="color_01" class="color"></td>
+			<td wicket:id="color_02" id="color_02" class="color"></td>
+			<td wicket:id="color_03" id="color_03" class="color"></td>
+			<td wicket:id="color_04" id="color_04" class="color"></td>
+			<td wicket:id="color_05" id="color_05" class="color"></td>
+			<td wicket:id="color_06" id="color_06" class="color"></td>
+			<td wicket:id="color_07" id="color_07" class="color"></td>
+			<td wicket:id="color_08" id="color_08" class="color"></td>
+			<td wicket:id="color_09" id="color_09" class="color"></td>
+			<td wicket:id="color_10" id="color_10" class="color"></td>
+			-->
+		</tr>
+	</table>
 
-    <form wicket:id="inputForm" class="inputForm">
-    
+	<form wicket:id="inputForm" class="inputForm">
+		<fieldset>
+			<legend>RGB</legend>
+			<table id="inputFormTable">
+				<tr>
+					<td valign="top"><label>R</label> <input wicket:id="valueR"
+						id="stringProperty" type="text" size="10" /></td>
+					<td valign="top"><label>G</label> <input wicket:id="valueG"
+						id="stringProperty" type="text" size="10" /></td>
+					<td valign="top"><label>B</label> <input wicket:id="valueB"
+						id="stringProperty" type="text" size="10" /></td>
 
-     <p></p>
-      <fieldset>
-        <legend>RGB</legend>
-        <table id="inputFormTable">
-          <tr>
-          <td valign="top">
-              <label>R</label>
-              <input wicket:id="valueR" id="stringProperty" type="text" size="10"/>
-          </td>
-          <td valign="top">
-              <label>G</label>
-              <input wicket:id="valueG" id="stringProperty" type="text" size="10"/>
-          </td>
-          <td valign="top">
-              <label>B</label>
-              <input wicket:id="valueB" id="stringProperty" type="text" size="10"/>   
-          </td>
-          
-          <td valign="top">
-          	<input type="submit" wicket:id="applyButton" value="Apply" />
-          </td>
-          
-		  </tr>              
-         </table>
-      </fieldset>
-    </form>
-	
+					<td valign="top"><input type="submit" wicket:id="applyButton"
+						value="Apply" /></td>
+
+				</tr>
+			</table>
+		</fieldset>
+	</form>
+
+
+	<form wicket:id="buttonForm" class="inputForm">
+		<fieldset>
+			<legend>Colors</legend>
+			<table id="buttonFormTable">
+				<tr>
+					<td valign="top"><input type="submit" wicket:id="redButton"
+						value="Red" /></td>
+					<td valign="top"><input type="submit" wicket:id="greButton"
+						value="Green" /></td>
+					<td valign="top"><input type="submit" wicket:id="bluButton"
+						value="Blue" /></td>
+					<td valign="top"><input type="submit" wicket:id="offButton"
+						value="Off" /></td>
+				</tr>
+			</table>
+		</fieldset>
+	</form>
 </body>
 
 </html>

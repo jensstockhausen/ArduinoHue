@@ -1,8 +1,11 @@
 package de.famst.arduino.hue;
 
-public class RGBColor
-{
+import java.io.Serializable;
 
+public class RGBColor implements Serializable
+{
+  private static final long serialVersionUID = 1L;
+  
   private Integer r = 0;
   private Integer g = 0;
   private Integer b = 0;
