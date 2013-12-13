@@ -24,16 +24,16 @@ public class SocketThread implements Runnable
   private DataOutputStream outToClient = null;
 
   private Boolean keepRunning;
-  
+
   private final BlockingQueue<String> queue;
 
   public SocketThread(BlockingQueue<String> queue)
   {
     LOG.info("Init SocketThread for Arduino");
-    
+
     port = 8888;
     this.queue = queue;
-    
+
     try
     {
       server = new ServerSocket(port);
@@ -42,23 +42,40 @@ public class SocketThread implements Runnable
           + server.getLocalPort());
 
       keepRunning = true;
-      
+
       try
       {
-        queue.put("#SET|000000000\n");
-        queue.put("#SET|255000000\n");
-        queue.put("#SET|000255000\n");
-        queue.put("#SET|000000255\n");
-        queue.put("#SET|000000000\n");     
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("#SET|");
+        for (int i = 0; i < 10*3; i++)
+        {
+          sb.append("000");
+        }
+        sb.append("\n");
+
+        String empty = sb.toString();
+
+        queue.put(empty);
+
+        for (int i = 0; i < 10; i++)
+        {
+          sb.replace(8 + i * 9, 8 + i * 9 + 3, "255");
+          queue.put(sb.toString());
+        }
+
+        queue.put(empty);
+
       }
       catch (InterruptedException e)
       {
         e.printStackTrace();
       }
-      
+
       thread = new Thread(this, "SocketThread");
       thread.start();
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       e.printStackTrace();
     }
@@ -83,27 +100,27 @@ public class SocketThread implements Runnable
       {
         try
         {
-          
+
           if (inFromClient.ready())
           {
             LOG.info("Start reading from client");
             String clientSentence = inFromClient.readLine();
             LOG.info("Received: " + clientSentence);
           }
-          
+
           if (queue.size() > 0)
           {
             String message = queue.take();
             outToClient.writeBytes(message);
             LOG.info("Written Message:" + message);
           }
-          
-        } 
+
+        }
         catch (IOException e)
         {
           e.printStackTrace();
           doReconnect = true;
-        } 
+        }
         catch (InterruptedException e)
         {
           e.printStackTrace();
@@ -124,7 +141,8 @@ public class SocketThread implements Runnable
 
       LOG.info("Setup Output");
       outToClient = new DataOutputStream(socket.getOutputStream());
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       e.printStackTrace();
     }
@@ -139,7 +157,8 @@ public class SocketThread implements Runnable
       LOG.info("Waiting for client to connect");
 
       client = server.accept();
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       e.printStackTrace();
     }

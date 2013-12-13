@@ -11,9 +11,9 @@ float hues[10];
 
 byte mac[] = { 
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-IPAddress ip(192,168,42,2);
+IPAddress ip(192,168,1,44);
 
-char server[] = "192.168.42.1";
+char server[] = "192.168.1.15";
 int port(8888);
 
 EthernetClient client;
@@ -51,44 +51,20 @@ void setup()
 
   Serial.println("wait for init");
 
-
-  noInterrupts();
-  reset_strip();  
-  for(int i=0;i<10;i++)
-  {
-    send_strip((0*65536)+(0*256)+255);
-  }
-  interrupts(); 
-  delay(1000);
- 
-   noInterrupts();
-  reset_strip();  
-  for(int i=0;i<10;i++)
-  {
-    send_strip((0*65536)+(255*256)+0);
-  }
-  interrupts(); 
-  delay(1000);
- 
-   noInterrupts();
-  reset_strip();  
-  for(int i=0;i<10;i++)
-  {
-    send_strip((255*65536)+(0*256)+0);
-  }
-  interrupts(); 
+  set_color(255,0,0);
   delay(1000);
 
-
-  noInterrupts();
-  reset_strip();  
-  for(int i=0;i<10;i++)
-  {
-    send_strip(0);
-  }
-  interrupts(); 
+  set_color(0,255,0);
   delay(1000);
 
+  set_color(0,0,255);
+  delay(1000);
+
+  set_color(255,255,255);
+  delay(1000);
+
+  set_color(0,0,0);
+  delay(1000);
 
   Serial.println("runnig");
 
@@ -102,10 +78,16 @@ void loop()
   {
     Serial.println("try to connect...");
 
+    set_color(255,0,0);
+    delay(100);
+    set_color(0,0,0);
+
     if (client.connect(server, port)) 
     {
+      set_color(0,255,0);      
       Serial.println("   connected");
-      client.println("Hello Server!");
+      client.println("Hello Server!");      
+      set_color(0,0,0);      
     } 
     else 
     {
@@ -219,6 +201,19 @@ void execute()
   }
   interrupts();   
 }
+
+
+void set_color(byte r, byte g, byte b)
+{
+  noInterrupts();
+  reset_strip();  
+  for(int i=0;i<10;i++)
+  {
+    send_strip((g*65536)+(b*256)+r);
+  }
+  interrupts(); 
+}
+
 
 
 void send_strip(uint32_t data)
