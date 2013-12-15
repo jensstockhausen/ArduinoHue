@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -30,16 +30,29 @@
 			<table id="inputFormTable">
 				<tr>
 					<td valign="top"><label>R</label> <input wicket:id="valueR"
-						id="stringProperty" type="text" size="10" /></td>
+						id="stringProperty" type="number" size="10" /></td>
 					<td valign="top"><label>G</label> <input wicket:id="valueG"
-						id="stringProperty" type="text" size="10" /></td>
+						id="stringProperty" type="number" size="10" /></td>
 					<td valign="top"><label>B</label> <input wicket:id="valueB"
-						id="stringProperty" type="text" size="10" /></td>
+						id="stringProperty" type="number" size="10" /></td>
 
 					<td valign="top"><input type="submit" wicket:id="applyButton"
 						value="Apply" /></td>
-
 				</tr>
+				
+				
+				<tr>
+					<td valign="top"><label>Fade</label> <input wicket:id="valueFade"
+						id="stringProperty" type="number" size="10" /></td>
+						
+					<td valign="top"><label>enabled</label> 	
+						<input type="checkbox" wicket:id="isFading" /></td>
+
+					<td valign="top"><input type="submit" wicket:id="fadeButton"
+						value="Fade" /></td>
+				</tr>
+				
+				
 			</table>
 		</fieldset>
 	</form>

@@ -25,7 +25,7 @@ public class ArduinoTCPServer
     LOG.info("Init ArduinoTCPServer");
   }
 
-  public void sendMessage(String message)
+  private void sendMessage(String message)
   {
     try
     {
@@ -48,7 +48,37 @@ public class ArduinoTCPServer
 
   public void setColors(List<RGBColor> colors)
   {
+    StringBuilder sb = new StringBuilder();
 
+    sb.append("#SET|");
+    for (int i = 0; i < 10; i++)
+    {
+      sb.append(String.format("%03d%03d%03d", colors.get(i)));
+      
+    }
+    sb.append("\n");
+    
+    sendMessage(sb.toString());
   }
+  
+  public void setFading(Boolean isFading, Integer delay)
+  {
+    StringBuilder sb = new StringBuilder();
+   
+    sb.append("#FADE|");
+    
+    if (isFading)
+    {
+      sb.append("ON");
+    }
+    else
+    {
+      sb.append("OF");
+    }
+    
+    sb.append(String.format("%03d\n", delay));
 
+    sendMessage(sb.toString());    
+  }
+ 
 }

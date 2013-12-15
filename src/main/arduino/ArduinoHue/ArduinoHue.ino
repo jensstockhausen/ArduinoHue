@@ -26,6 +26,8 @@ boolean readingValue;
 String  valueBuffer;
 
 // color handling
+
+boolean isFading;
 unsigned long updateInterval;
 unsigned long lastUpdateTime;
 
@@ -33,6 +35,8 @@ unsigned long lastUpdateTime;
 long target[3][10]; 
 long current[3][10]; 
 unsigned long colors[10];
+
+
 
 void setup() 
 {
@@ -68,8 +72,8 @@ void setup()
 
   Serial.println("runnig");
 
+  isFading = true;
   lastConnectionTime = 0;
-
   updateInterval = 3;
 
   for (int c=0;c<3;c++)
@@ -168,17 +172,26 @@ void update_colors()
       if (target[c][i] != current[c][i])
       {
         needUpdate = true;
-
-        if (target[c][i] - current[c][i] > 0)
+        
+        if (!isFading)
         {
-          current[c][i] = current[c][i] + 1;
+          current[c][i] = target[c][i];
         }
-        else
+        else 
         {
-          current[c][i] = current[c][i] - 1;
-        }
-      }
-    }
+          if (target[c][i] - current[c][i] > 0)
+          {
+            current[c][i] = current[c][i] + 1;
+          }
+          else
+          {
+            current[c][i] = current[c][i] - 1;
+          }
+        } //fading
+      
+      }//c
+    }//i
+    
   }
 
   if (needUpdate)
@@ -206,6 +219,8 @@ void execute()
   Serial.println("Execute: " + modeBuffer + " " + valueBuffer);
   byte r,g,b;
 
+  //#SET|00025500
+  //#SET|00025500000255000002550000025500000255000002550000025500000255000002550000025500
   if (modeBuffer.equals("SET"))
   {
     if (valueBuffer.length() == 9)
@@ -237,8 +252,23 @@ void execute()
     }
     
     print_values();
-
   }
+  
+  //#FADE|ON100
+  //#FADE|OF020
+  //#FADE|ON006
+  else if (modeBuffer.equals("FADE"))
+  {
+    isFading = (valueBuffer.substring(0, 2).equals("ON"));
+    updateInterval = valueBuffer.substring(2, 5).toInt();
+    
+    Serial.print("Fade: ");
+    if (isFading) Serial.print("ON  ");
+    else Serial.print("OFF ");
+    Serial.print(updateInterval);
+    Serial.print("\n");
+  }
+  
 }
 
 void print_values()
