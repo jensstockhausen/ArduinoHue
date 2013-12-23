@@ -1,17 +1,20 @@
 package de.famst.arduino.hue;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.validation.validator.RangeValidator;
 
-import com.googlecode.wicket.jquery.ui.form.button.AjaxButton;
-import com.googlecode.wicket.jquery.ui.form.button.Button;
-import com.googlecode.wicket.jquery.ui.form.slider.Slider;
+import com.googlecode.wicket.jquery.ui.form.slider.AjaxSlider;
+import com.googlecode.wicket.jquery.ui.form.slider.Slider.Range;
 import com.googlecode.wicket.jquery.ui.panel.JQueryFeedbackPanel;
 
 import de.famst.arduino.hue.com.ArduinoTCPServer;
@@ -22,74 +25,172 @@ public class SingleColorPage extends WebPage
   
   @SpringBean
   private ArduinoTCPServer arduinoTCPServer;
-
+  
+  // Models //
+  private final Model<String> model;
+ 
   public SingleColorPage()
   {
-    Form<Integer> form = new Form<Integer>("rgb_slider_form");
+    this.model = new Model<String>("#336699");
+    this.init();
+  }
+  
+  private void init()
+  {
+    final Form<Void> form = new Form<Void>("form");
     this.add(form);
 
     // FeedbackPanel //
-    form.add(new JQueryFeedbackPanel("feedback").setOutputMarkupId(true));
+    final FeedbackPanel feedback = new JQueryFeedbackPanel("feedback");
+    form.add(feedback.setOutputMarkupId(true));
 
-    // Sliders //
-    TextField<Integer> inputR = new TextField<Integer>("inputR",
-        new Model<Integer>(0), Integer.class);
-    form.add(inputR);
-    final Slider sliderR = new Slider("sliderR", inputR.getModel(), inputR); 
-    
-    sliderR.setRangeValidator(new RangeValidator<Integer>(0, 255));
-    form.add(sliderR.setMin(0).setMax(255));
+    // Color panel //
+    final EmptyPanel colorPanel = new EmptyPanel("color");
+    colorPanel.add(this.newBackgroundAttributeModifier());
+    form.add(colorPanel.setOutputMarkupId(true));
 
-    TextField<Integer> inputG = new TextField<Integer>("inputG",
-        new Model<Integer>(0), Integer.class);
-    form.add(inputG);
-    final Slider sliderG = new Slider("sliderG", inputG.getModel(), inputG); 
-    
-    sliderG.setRangeValidator(new RangeValidator<Integer>(0, 255));
-    form.add(sliderG.setMin(0).setMax(255));
-    
-    
-    TextField<Integer> inputB = new TextField<Integer>("inputB",
-        new Model<Integer>(0), Integer.class);
-    form.add(inputB);
-    final Slider sliderB = new Slider("sliderB", inputB.getModel(), inputB); 
-    
-    sliderB.setRangeValidator(new RangeValidator<Integer>(0, 255));
-    form.add(sliderB.setMin(0).setMax(255));
-    
+    // Color Slider(s) //
+    form.add(new ColorPicker("picker", this.model) {
 
-    form.add(new AjaxButton("button")
-    {
       private static final long serialVersionUID = 1L;
 
       @Override
-      protected void onSubmit(AjaxRequestTarget target, Form<?> form)
+      protected void onColorChanged(AjaxRequestTarget target)
       {
-        SingleColorPage.this.apply(sliderR, sliderG, sliderB);
-        target.add(form);
-      }
+        // change the color of the color-panel //
+        colorPanel.add(SingleColorPage.this.newBackgroundAttributeModifier());
+        target.add(colorPanel);
 
-      @Override
-      protected void onError(AjaxRequestTarget target, Form<?> form)
-      {
-        target.add(form.get("feedback"));
+        SingleColorPage.this.info(this);
+        target.add(feedback);
       }
     });
   }
-  
-  
-  private void apply(Slider sliderR,Slider sliderG,Slider sliderB)
+
+  private Behavior newBackgroundAttributeModifier()
   {
-    this.info("Set Color: (" 
-        + sliderR.getModelObject() + ","
-        + sliderG.getModelObject() + ","
-        + sliderB.getModelObject() + ")"
-    );
+    return AttributeModifier.replace("style", "background-color: " + this.model.getObject());
+  }
+
+  private void info(Component component)
+  {
+    String hexColor = this.model.getObject();
     
-    RGBColor color = new RGBColor(sliderR.getModelObject(), sliderG.getModelObject(), sliderB.getModelObject());
     
+    this.info("Setting Color: " + hexColor);
+    
+    RGBColor color = new RGBColor();
+    
+    //#acc948
+    color.setR(Integer.parseInt(hexColor.substring(1, 3), 16));
+    color.setG(Integer.parseInt(hexColor.substring(3, 5), 16));
+    color.setB(Integer.parseInt(hexColor.substring(5, 7), 16));
+
     arduinoTCPServer.setColor(color);
-    
+  }
+
+ 
+  
+//  private void apply(Slider sliderR,Slider sliderG,Slider sliderB)
+//  {
+//    this.info("Set Color: (" 
+//        + sliderR.getModelObject() + ","
+//        + sliderG.getModelObject() + ","
+//        + sliderB.getModelObject() + ")"
+//    );
+//    
+//    RGBColor color = new RGBColor(sliderR.getModelObject(), sliderG.getModelObject(), sliderB.getModelObject());
+//    
+//    arduinoTCPServer.setColor(color);
+//    
+//  }
+  
+  
+  
+  abstract class ColorPicker extends Fragment
+  {
+    private static final long serialVersionUID = 1L;
+    private static final int INDEX_R = 1; //#RRxxxx
+    private static final int INDEX_G = 3; //#xxGGxx
+    private static final int INDEX_B = 5; //#xxxxBB
+
+    private final IModel<Integer> modelR;
+    private final IModel<Integer> modelG;
+    private final IModel<Integer> modelB;
+
+    public ColorPicker(String id, IModel<String> model)
+    {
+      super(id, "color-picker", SingleColorPage.this, model);
+
+      this.modelR = this.newColorModel(INDEX_R);
+      this.modelG = this.newColorModel(INDEX_G);
+      this.modelB = this.newColorModel(INDEX_B);
+
+      this.init();
+    }
+
+    private void init()
+    {
+      this.add(this.newAjaxSlider("r", this.modelR)); // Slider: Red
+      this.add(this.newAjaxSlider("g", this.modelG)); // Slider: Green
+      this.add(this.newAjaxSlider("b", this.modelB)); // Slider: Blue
+    }
+
+    /**
+     * Updates the model with the new color.
+     * @param target
+     * @param form
+     */
+    private void changeColor(AjaxRequestTarget target)
+    {
+      Integer r = this.modelR.getObject();
+      Integer g = this.modelG.getObject();
+      Integer b = this.modelB.getObject();
+
+      this.setDefaultModelObject(String.format("#%02x%02x%02x", r, g, b));
+      this.onColorChanged(target);
+    }
+
+    // Events //
+    /**
+     * Event which will be fired when the color has been changed.
+     * @param target the {@link AjaxRequestTarget}
+     */
+    protected abstract void onColorChanged(AjaxRequestTarget target);
+
+    // Factories //
+    /**
+     * Gets a new {@link AjaxSlider} for the specified color model
+     * @param id the markup id
+     * @param model the (R|G|B) color model
+     * @return the {@link AjaxSlider}
+     */
+    private AjaxSlider newAjaxSlider(String id, IModel<Integer> model)
+    {
+      AjaxSlider slider = new AjaxSlider(id, model) {
+
+        private static final long serialVersionUID = 1L;
+        
+        @Override
+        public void onValueChanged(AjaxRequestTarget target, Form<?> form)
+        {
+          ColorPicker.this.changeColor(target);
+        }
+
+      };
+
+      return slider.setRange(Range.MIN).setMax(255);
+    }
+
+    /**
+     * Gets a new one-color-model based on the rdb-color-model<br/>
+     * The code is not defensive (ie: no check on string length)
+     */
+    private IModel<Integer> newColorModel(int index)
+    {
+      String color = this.getDefaultModelObjectAsString().substring(index, index + 2);
+      return new Model<Integer>(Integer.parseInt(color, 16));
+    }
   }
   
 
