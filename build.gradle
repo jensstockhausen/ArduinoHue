@@ -3,6 +3,9 @@ apply plugin: 'eclipse-wtp'
 
 repositories {
     mavenCentral()
+    maven {
+      url "http://jqwicket.googlecode.com/svn/m2-repo/releases/"
+    }
 }
 
 eclipse {
@@ -20,6 +23,8 @@ dependencies {
    compile 'org.springframework:spring-core:3.2.5.RELEASE'
    compile 'org.springframework:spring-context:3.2.5.RELEASE'
    compile 'org.springframework:spring-web:3.2.5.RELEASE'
+   
+   compile 'com.googlecode.wicket-jquery-ui:jquery-ui-core:6.2.2'
    
    compile 'javax.ws.rs:javax.ws.rs-api:2.0'
    compile 'org.jboss.resteasy:resteasy-jaxrs:3.0.5.Final'

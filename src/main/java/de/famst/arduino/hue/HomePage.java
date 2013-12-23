@@ -6,9 +6,11 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.NumberTextField;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.RangeValidator;
+
 
 import de.famst.arduino.hue.com.ArduinoTCPServer;
 
@@ -26,8 +28,8 @@ public class HomePage extends WebPage
     private Integer valueR;
     private Integer valueG;
     private Integer valueB;
-    
-    private Boolean isFading; 
+
+    private Boolean isFading;
     private Integer valueFade;
 
     public Integer getValueR()
@@ -70,34 +72,35 @@ public class HomePage extends WebPage
       valueG = 0;
       valueB = 0;
 
-      setDefaultModel(new CompoundPropertyModel(this));
+      setDefaultModel(new CompoundPropertyModel<RGBInputForm>(this));
 
-      add(new NumberTextField<Integer>("valueR").setRequired(true)
-          .add(new RangeValidator<Integer>(0, 255)));
+      add(new NumberTextField<Integer>("valueR").setRequired(true).add(
+          new RangeValidator<Integer>(0, 255)));
 
-      add(new NumberTextField<Integer>("valueG").setRequired(true)
-          .add(new RangeValidator<Integer>(0, 255)));
+      add(new NumberTextField<Integer>("valueG").setRequired(true).add(
+          new RangeValidator<Integer>(0, 255)));
 
-      add(new NumberTextField<Integer>("valueB").setRequired(true)
-          .add(new RangeValidator<Integer>(0, 255)));
+      add(new NumberTextField<Integer>("valueB").setRequired(true).add(
+          new RangeValidator<Integer>(0, 255)));
 
-      add(new Button("applyButton"){
+      add(new Button("applyButton")
+      {
 
         private static final long serialVersionUID = 1L;
-        
+
         @Override
         public void onSubmit()
         {
           setColor(new RGBColor(getValueR(), getValueG(), getValueB()));
-        }        
-        
+        }
+
       });
-      
-      add(new NumberTextField<Integer>("valueFade").setRequired(true)
-          .add(new RangeValidator<Integer>(0, 999)));
-      
+
+      add(new NumberTextField<Integer>("valueFade").setRequired(true).add(
+          new RangeValidator<Integer>(0, 999)));
+
       add(new CheckBox("isFading"));
-      
+
       add(new Button("fadeButton")
       {
         private static final long serialVersionUID = 1L;
@@ -110,7 +113,6 @@ public class HomePage extends WebPage
       });
 
     }
-
 
   }
 
@@ -156,7 +158,7 @@ public class HomePage extends WebPage
   {
     super();
 
-    setDefaultModel(new CompoundPropertyModel(this));
+    setDefaultModel(new CompoundPropertyModel<HomePage>(this));
 
     Label label = new Label("color00");
 
@@ -167,6 +169,18 @@ public class HomePage extends WebPage
 
     add(new RGBInputForm("inputForm"));
     add(new ButtonForm("buttonForm"));
+
+    add(new Link("singleColorPage")
+    {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void onClick()
+      {
+        setResponsePage(SingleColorPage.class);
+      }
+    });
+
   }
 
   public void setColor(RGBColor color)

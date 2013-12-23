@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:wicket="http://wicket.apache.org">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<link rel="stylesheet" type="text/css" href="style.css" />
-	<title>Arduino Hue</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="style.css" />
+<title>Arduino Hue</title>
 </head>
 <body>
 	<table id="colorTable">
@@ -39,20 +39,20 @@
 					<td valign="top"><input type="submit" wicket:id="applyButton"
 						value="Apply" /></td>
 				</tr>
-				
-				
+
+
 				<tr>
-					<td valign="top"><label>Fade</label> <input wicket:id="valueFade"
-						id="stringProperty" type="number" size="10" /></td>
-						
-					<td valign="top"><label>enabled</label> 	
-						<input type="checkbox" wicket:id="isFading" /></td>
+					<td valign="top"><label>Fade</label> <input
+						wicket:id="valueFade" id="stringProperty" type="number" size="10" /></td>
+
+					<td valign="top"><label>enabled</label> <input type="checkbox"
+						wicket:id="isFading" /></td>
 
 					<td valign="top"><input type="submit" wicket:id="fadeButton"
 						value="Fade" /></td>
 				</tr>
-				
-				
+
+
 			</table>
 		</fieldset>
 	</form>
@@ -75,6 +75,9 @@
 			</table>
 		</fieldset>
 	</form>
+
+	<button wicket:id="singleColorPage">SingleColor</button>
+
 </body>
 
 </html>

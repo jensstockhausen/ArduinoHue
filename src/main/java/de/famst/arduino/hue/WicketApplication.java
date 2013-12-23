@@ -23,8 +23,10 @@ public class WicketApplication extends WebApplication
     getRequestLoggerSettings().setRequestLoggerEnabled(true);
     
     getMarkupSettings().setCompressWhitespace(false);
+    getMarkupSettings().setStripWicketTags(true);
     
     getComponentInstantiationListeners().add(new SpringComponentInjector(this));
+    
   }
 
   @Override
