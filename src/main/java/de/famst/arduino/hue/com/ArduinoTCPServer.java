@@ -16,6 +16,7 @@ public class ArduinoTCPServer
 {
   private static final Logger LOG = LoggerFactory
       .getLogger(ArduinoTCPServer.class);
+  
 
   private static BlockingQueue<String> queue = new ArrayBlockingQueue<String>(100);
   private static SocketThread thread = new SocketThread(queue);
@@ -53,7 +54,7 @@ public class ArduinoTCPServer
     sb.append("#SET|");
     for (int i = 0; i < 10; i++)
     {
-      sb.append(String.format("%03d%03d%03d", colors.get(i)));
+      sb.append(String.format("%03d%03d%03d", colors.get(i).getR(), colors.get(i).getG(), colors.get(i).getB()));
       
     }
     sb.append("\n");

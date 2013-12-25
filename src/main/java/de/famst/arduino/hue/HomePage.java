@@ -11,17 +11,18 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.RangeValidator;
 
-
 import de.famst.arduino.hue.com.ArduinoTCPServer;
+import de.famst.arduino.hue.com.Repository;
 
 public class HomePage extends WebPage
 {
   @SpringBean
   private ArduinoTCPServer arduinoTCPServer;
+  
+  @SpringBean
+  private Repository repos;
 
   private static final long serialVersionUID = 1L;
-
-  private String color00 = "000 000 000";
 
   private class RGBInputForm extends Form
   {
@@ -67,10 +68,12 @@ public class HomePage extends WebPage
     public RGBInputForm(String id)
     {
       super(id);
+      
+      RGBColor color = repos.getColor();
 
-      valueR = 0;
-      valueG = 0;
-      valueB = 0;
+      valueR = color.getR();
+      valueG = color.getG();
+      valueB = color.getB();
 
       setDefaultModel(new CompoundPropertyModel<RGBInputForm>(this));
 
@@ -85,7 +88,6 @@ public class HomePage extends WebPage
 
       add(new Button("applyButton")
       {
-
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -160,9 +162,9 @@ public class HomePage extends WebPage
 
     setDefaultModel(new CompoundPropertyModel<HomePage>(this));
 
-    Label label = new Label("color00");
-
-    add(label);
+//    Label label = new Label("color00");
+//
+//    add(label);
 
     // add(.add(new AttributeModifier("style",
     // "background-color:blue; font-weight:bold")));
@@ -180,14 +182,24 @@ public class HomePage extends WebPage
         setResponsePage(SingleColorPage.class);
       }
     });
+    
+    add(new Link("dualColorPage")
+    {
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void onClick()
+      {
+        setResponsePage(DualColorPage.class);
+      }
+    });
 
   }
 
   public void setColor(RGBColor color)
   {
     arduinoTCPServer.setColor(color);
-    color00 = String.format("%03d %03d %03d", color.getR(), color.getG(),
-        color.getB());
+    repos.setColor(color);
   }
 
 }

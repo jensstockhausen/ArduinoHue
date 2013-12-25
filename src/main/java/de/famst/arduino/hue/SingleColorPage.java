@@ -18,6 +18,7 @@ import com.googlecode.wicket.jquery.ui.form.slider.Slider.Range;
 import com.googlecode.wicket.jquery.ui.panel.JQueryFeedbackPanel;
 
 import de.famst.arduino.hue.com.ArduinoTCPServer;
+import de.famst.arduino.hue.com.Repository;
 
 public class SingleColorPage extends WebPage
 {
@@ -26,12 +27,17 @@ public class SingleColorPage extends WebPage
   @SpringBean
   private ArduinoTCPServer arduinoTCPServer;
   
+  @SpringBean
+  private Repository repos;
+  
   // Models //
   private final Model<String> model;
  
   public SingleColorPage()
   {
-    this.model = new Model<String>("#336699");
+    RGBColor color = repos.getColor();
+    
+    this.model = new Model<String>(color.toHex());
     this.init();
   }
   
@@ -76,36 +82,10 @@ public class SingleColorPage extends WebPage
   {
     String hexColor = this.model.getObject();
     
-    
     this.info("Setting Color: " + hexColor);
-    
-    RGBColor color = new RGBColor();
-    
-    //#acc948
-    color.setR(Integer.parseInt(hexColor.substring(1, 3), 16));
-    color.setG(Integer.parseInt(hexColor.substring(3, 5), 16));
-    color.setB(Integer.parseInt(hexColor.substring(5, 7), 16));
 
-    arduinoTCPServer.setColor(color);
+    arduinoTCPServer.setColor(new RGBColor(hexColor));
   }
-
- 
-  
-//  private void apply(Slider sliderR,Slider sliderG,Slider sliderB)
-//  {
-//    this.info("Set Color: (" 
-//        + sliderR.getModelObject() + ","
-//        + sliderG.getModelObject() + ","
-//        + sliderB.getModelObject() + ")"
-//    );
-//    
-//    RGBColor color = new RGBColor(sliderR.getModelObject(), sliderG.getModelObject(), sliderB.getModelObject());
-//    
-//    arduinoTCPServer.setColor(color);
-//    
-//  }
-  
-  
   
   abstract class ColorPicker extends Fragment
   {
