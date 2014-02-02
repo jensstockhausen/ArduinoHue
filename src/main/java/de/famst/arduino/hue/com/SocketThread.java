@@ -112,9 +112,10 @@ public class SocketThread implements Runnable
           {
             String message = queue.take();
             outToClient.writeBytes(message);
-            LOG.info("Written Message:" + message);
+            LOG.info("Written Message:" + message.replace("\n", ""));
           }
 
+          Thread.sleep(200);
         }
         catch (IOException e)
         {

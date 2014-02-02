@@ -30,7 +30,7 @@ public class ArduinoTCPServer
   {
     try
     {
-      LOG.info("Enqueing:" + message);
+      LOG.info("Enqueing:" + message.replace("\n", ""));
       queue.put(message);
     }
     catch (InterruptedException e)
