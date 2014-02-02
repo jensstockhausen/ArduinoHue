@@ -1,5 +1,6 @@
 apply plugin: 'war'
 apply plugin: 'eclipse-wtp'
+apply plugin: 'project-report'
 
 repositories {
     mavenCentral()
@@ -15,14 +16,28 @@ eclipse {
 	}
 }
 
+
+buildscript {
+ext {
+  wicketVersion = '6.11.0'
+  springVersion = '3.2.5.RELEASE'
+}
+}
+
 dependencies {
-   compile 'org.apache.wicket:wicket:6.11.0'
-   compile 'org.apache.wicket:wicket-spring:6.11.0'
-   compile 'org.apache.wicket:wicket-devutils:6.11.0'
    
-   compile 'org.springframework:spring-core:3.2.5.RELEASE'
-   compile 'org.springframework:spring-context:3.2.5.RELEASE'
-   compile 'org.springframework:spring-web:3.2.5.RELEASE'
+   println "Spring: $springVersion"
+   println "Wicket: $wicketVersion"    
+  
+  
+   compile "org.apache.wicket:wicket:$wicketVersion"
+   compile "org.apache.wicket:wicket-spring:$wicketVersion"
+   compile "org.apache.wicket:wicket-devutils:$wicketVersion"
+   
+   compile "org.springframework:spring-core:$springVersion"
+   compile "org.springframework:spring-context:$springVersion"
+   compile "org.springframework:spring-web:$springVersion"
+   compile "org.springframework:spring-jdbc:$springVersion"
    
    compile 'com.googlecode.wicket-jquery-ui:jquery-ui-core:6.2.2'
    
